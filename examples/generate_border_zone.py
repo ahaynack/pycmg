@@ -8,9 +8,14 @@ Created on Tue Nov 22 10:10:36 2022
 # Generate border zone
 
 import numpy as np
+import copy
+from scipy import ndimage
+import open3d as o3d
 
-mesostructure = np.load('ab8_mesostructure.npy')
+mesostructure = np.load('ab2_new_2_mesostructure.npy')
 
+#######################################################################################################################
+# OLD
 j = -1
 check_0 = False
 
@@ -118,21 +123,51 @@ for index, value in enumerate(iter_range):
 meso_diff_np = np.flip(meso_diff_np, axis=0)
 
 
-new_mesostructure = np.concatenate((meso_diff_np, mesostructure))
+new_mesostructure = np.concatenate((boarder_zone, mesostructure))
 
 
-# # Ratio matrix / aggregates
-# axis_1 = 1
-# axis_2 = 2
-# axis_len_1 = np.size(new_mesostructure, axis_1)
-# axis_len_2 = np.size(new_mesostructure, axis_2)
-# ratio = np.apply_over_axes(np.sum, new_mesostructure, [axis_1,axis_2])
-# ratio = ratio.flatten() / (axis_len_1*axis_len_2)
-# #ratio = 1 - ratio
+# Ratio matrix / aggregates
+axis_1 = 1
+axis_2 = 2
+axis_len_1 = np.size(new_mesostructure, axis_1)
+axis_len_2 = np.size(new_mesostructure, axis_2)
+ratio = np.apply_over_axes(np.sum, new_mesostructure, [axis_1,axis_2])
+ratio = ratio.flatten() / (axis_len_1*axis_len_2)
+#ratio = 1 - ratio
+
+#######################################################################################################################
+# # NEW
+# mcr = mesostructure
+
+# def threeDperc(mcr, H):
+#     '''mcr is the microstructure matrix and H is the kernel: Function uses
+#     convolution filtering to estimate the percolation from edge'''
+#     p, perfrac = 1, 0
+#     tempout = copy.deepcopy(mcr)
+#     tempout[0, :, :] = 50
+
+#     while abs(p - perfrac) > 0:
+#         p = perfrac
+#         #
+#         tempout = (((tempout > 0).astype(int)) +
+#                    49 * ((ndimage.convolve(tempout, H, mode='constant', cval=0.0) > 1323).astype(int)))
+#         perfrac = np.mean(tempout)
+#     return (tempout > 2).astype(int)
+
+
+# systemSideLength = 20
+# phi = 0.25
+
+# kernel = np.array([[[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+#                    [[0, 1, 0], [1, 1274, 1], [0, 1, 0]],
+#                    [[0, 0, 0], [0, 1, 0], [0, 0, 0]]])
+
+# res = threeDperc(mcr, kernel)
+
+# new_mesostructure = res
 
 
 ###
-import open3d as o3d
 z,x,y = new_mesostructure.nonzero()
 # z,x,y = np.where(new_mesostructure == 0)
 xyz = np.stack((x,y,z), axis=1)

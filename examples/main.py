@@ -6,7 +6,7 @@ from configuration import Configuration
 from visualization import export_data, visualize_sections
 import numpy as np
 
-output_name = 'ab8'
+output_name = 'ab2_new_2'
 
 vf_max_assembly_input = np.loadtxt(f'{output_name}_input_generated_vf_max.csv')
 

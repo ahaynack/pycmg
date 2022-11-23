@@ -11,38 +11,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Input
-# # AB2
-# aggr_original = {
-#     0.063: 0.000582111, 
-#     0.125: 0.004178891, 
-#     0.25: 0.18027441, 
-#     0.5: 0.282333085, 
-#     1: 0.261367809, 
-#     2: 0.23691915, 
-#     4: 0.033762434, 
-#     8: 0.000582111
-#     }
-
-# aggr_cement_ratio_original = 0.5
-# aggr_output_range = [0.5, 4]
-# output_name = 'ab2'
-
-# AB8
+# AB2
 aggr_original = {
-    0.063: 0.00157896276,
-    0.125: 0.00219593379,
-    0.25: 0.09070450397,
-    0.5: 0.1229722924,
-    1: 0.05343139613,
-    2: 0.1486951864,
-    4: 0.3603838492,
-    8: 0.1990486191,
-    16: 0.02098926168
+    0.063: 0.000582111, 
+    0.125: 0.004178891, 
+    0.25: 0.18027441, 
+    0.5: 0.282333085, 
+    1: 0.261367809, 
+    2: 0.23691915, 
+    4: 0.033762434, 
+    8: 0.000582111
     }
 
-aggr_cement_ratio_original = 0.67
-aggr_output_range = [0.5, 8]
-output_name = 'ab8'
+aggr_cement_ratio_original = 0.5
+aggr_output_range = [0.5, 4]
+output_name = 'ab2_new_2'
+
+# # AB8
+# aggr_original = {
+#     0.063: 0.00157896276,
+#     0.125: 0.00219593379,
+#     0.25: 0.09070450397,
+#     0.5: 0.1229722924,
+#     1: 0.05343139613,
+#     2: 0.1486951864,
+#     4: 0.3603838492,
+#     8: 0.1990486191,
+#     16: 0.02098926168
+#     }
+
+# aggr_cement_ratio_original = 0.67
+# aggr_output_range = [0.5, 8]
+# output_name = 'ab8'
 
 global header_list
 header_list = ['a', 'vf_max']
@@ -101,8 +101,8 @@ test1, test2 = main(aggr_original, aggr_cement_ratio_original, aggr_output_range
 #test1 = append_column(test1, 'TRUE')
 #header_list.append('coat')
 test1 = append_column(test1, 30, 'n_cuts')
-test1 = append_column(test1, 10, 't_coat')
-test1 = append_column(test1, 10, 'space')
+test1 = append_column(test1, 0, 't_coat')
+test1 = append_column(test1, 0, 'space')
 
 #test3 = np.append(test1, np.expand_dims(np.array([1,2,3]), axis=1), axis=1)
 
