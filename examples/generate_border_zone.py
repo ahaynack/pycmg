@@ -9,35 +9,52 @@ Created on Tue Nov 22 10:10:36 2022
 
 import numpy as np
 
-mesostructure = np.load('ab2_mesostructure.npy')
+mesostructure = np.load('ab8_mesostructure.npy')
 
 j = -1
 check_0 = False
 
 next_layer_list = []
+meso_diff_list = []
 slice_original = mesostructure[0,:,:]
 
 while check_0 == False: 
-    # #slice_new = mesostructure[j,:,:]
-    # def generate_next_layer(slice_original, slice_new):
-    #     def new_value(x):
-    #         if x == 1:
-    #             x = 1
-    #         else:
-    #             x = 0
-    #         return x
+    # OPTION 1
+    slice_new = mesostructure[j,:,:]
+    def generate_next_layer(slice_original, slice_new):
+        def new_value(x):
+            if x == 1:
+                x = 1
+            else:
+                x = 0
+            return x
         
-    #     slice_output = 2*slice_original - slice_new
-    #     slice_output[slice_output < 0] = 0
-    #     slice_output[slice_output > 1] = 0
+        slice_output = 2*slice_original - slice_new
+        slice_output[slice_output < 0] = 0
+        slice_output[slice_output > 1] = 0
         
-    #     return slice_output
+        return slice_output
     
-    # #next_layer = generate_next_layer(slice_original, slice_new)
+    next_layer = generate_next_layer(slice_original, slice_new)
     
-    # new next layer
-    slice_new = slice_original
-    def generate_next_layer(slice_new):
+    # ### Clean layer
+    # check_neighbors = next_layer.nonzero()
+    # u, c = np.unique(check_neighbors[0], return_counts=True)
+    # dup = u[c > 1]
+    # #print(dup)
+    # u2, c2 = np.unique(check_neighbors[1], return_counts=True)
+    # dup2 = u2[c2 > 1]
+    # #print(dup2)
+    
+    # # if len(dup) < 1:
+    # #     break
+    # # if len(dup2) < 1:
+    # #     break
+    # ##
+    
+    # OPTION 2
+    slice_new = next_layer #slice_original
+    def generate_next_layer2(slice_new):
         def aggr_clusters(data, stepsize=0):
             x = np.split(data, np.where(np.diff(data) != stepsize)[0]+1)
             for i, v in enumerate(x):
@@ -45,7 +62,13 @@ while check_0 == False:
                     v_copy = v.copy()
                     v_copy[0] = 0
                     v_copy[-1] = 0
-                    x[i] = v_copy
+                    # 1
+                    if np.sum(v_copy) < 1:
+                        x[i] = v_copy
+                    else:
+                        x[i] = v
+                    # # 2
+                    # x[i] = v_copy
             x = np.concatenate(x, axis=0)
             return x
         
@@ -58,27 +81,54 @@ while check_0 == False:
         
         return cluster_diff
     
-    next_layer = generate_next_layer(slice_new)
+    next_layer = generate_next_layer2(slice_new)
     
+    #if ((len(dup) > 1) and (len(dup2) > 1)):
     next_layer_list.append(next_layer)
     slice_original = next_layer
+    
+    # Copy from 'old' mesostructure
+    meso_diff = mesostructure[j,:,:] + next_layer
+    meso_diff_list.append(meso_diff)
     
     check_0 = np.array_equal(next_layer, np.zeros_like(next_layer))
     j -= 1
 
 boarder_zone = np.flip(np.array(next_layer_list), axis=0)
+meso_diff_np = np.array(meso_diff_list)
+meso_diff_np_copy = meso_diff_np.copy()
 
-new_mesostructure = np.concatenate((boarder_zone, mesostructure))
+def test(arr):
+    if np.all(arr) == False:
+        output = 1
+    else:
+        output = 0
+    return output
+
+iter_range = list(range(np.size(meso_diff_np, 0)))
+for index, value in enumerate(iter_range):
+    sdf = 0
+    for ind, val in np.ndenumerate(meso_diff_np[value,:,:]):
+        if val == 1:
+            meso_diff_np[value,ind[0],ind[1]] = test(meso_diff_np[value:,ind[0],ind[1]])
+        if val == 2:
+            meso_diff_np[value,ind[0],ind[1]] = 1
+        sdf += 1
+
+meso_diff_np = np.flip(meso_diff_np, axis=0)
 
 
-# Ratio matrix / aggregates
-axis_1 = 1
-axis_2 = 2
-axis_len_1 = np.size(new_mesostructure, axis_1)
-axis_len_2 = np.size(new_mesostructure, axis_2)
-ratio = np.apply_over_axes(np.sum, new_mesostructure, [axis_1,axis_2])
-ratio = ratio.flatten() / (axis_len_1*axis_len_2)
-#ratio = 1 - ratio
+new_mesostructure = np.concatenate((meso_diff_np, mesostructure))
+
+
+# # Ratio matrix / aggregates
+# axis_1 = 1
+# axis_2 = 2
+# axis_len_1 = np.size(new_mesostructure, axis_1)
+# axis_len_2 = np.size(new_mesostructure, axis_2)
+# ratio = np.apply_over_axes(np.sum, new_mesostructure, [axis_1,axis_2])
+# ratio = ratio.flatten() / (axis_len_1*axis_len_2)
+# #ratio = 1 - ratio
 
 
 ###

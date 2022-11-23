@@ -11,20 +11,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Input
+# # AB2
+# aggr_original = {
+#     0.063: 0.000582111, 
+#     0.125: 0.004178891, 
+#     0.25: 0.18027441, 
+#     0.5: 0.282333085, 
+#     1: 0.261367809, 
+#     2: 0.23691915, 
+#     4: 0.033762434, 
+#     8: 0.000582111
+#     }
+
+# aggr_cement_ratio_original = 0.5
+# aggr_output_range = [0.5, 4]
+# output_name = 'ab2'
+
+# AB8
 aggr_original = {
-    0.063: 0.000582111, 
-    0.125: 0.004178891, 
-    0.25: 0.18027441, 
-    0.5: 0.282333085, 
-    1: 0.261367809, 
-    2: 0.23691915, 
-    4: 0.033762434, 
-    8: 0.000582111
+    0.063: 0.00157896276,
+    0.125: 0.00219593379,
+    0.25: 0.09070450397,
+    0.5: 0.1229722924,
+    1: 0.05343139613,
+    2: 0.1486951864,
+    4: 0.3603838492,
+    8: 0.1990486191,
+    16: 0.02098926168
     }
 
-aggr_cement_ratio_original = 0.5
-
-aggr_output_range = [0.5, 4]
+aggr_cement_ratio_original = 0.67
+aggr_output_range = [0.5, 8]
+output_name = 'ab8'
 
 global header_list
 header_list = ['a', 'vf_max']
@@ -89,8 +107,8 @@ test1 = append_column(test1, 10, 'space')
 #test3 = np.append(test1, np.expand_dims(np.array([1,2,3]), axis=1), axis=1)
 
 header_list_input = create_header_list_input(header_list)
-np.savetxt('ab2_input_generated.csv', test1, fmt='%1.4f', delimiter=',', header=header_list_input, comments='')
-np.savetxt('ab2_input_generated_vf_max.csv', test2, fmt='%1.4f', delimiter=',')
+np.savetxt(f'{output_name}_input_generated.csv', test1, fmt='%1.4f', delimiter=',', header=header_list_input, comments='')
+np.savetxt(f'{output_name}_input_generated_vf_max.csv', test2, fmt='%1.4f', delimiter=',')
 
 
 
